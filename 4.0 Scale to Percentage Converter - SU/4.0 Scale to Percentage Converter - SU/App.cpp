@@ -51,6 +51,8 @@ void displayTable(vector<double> table)
 double toPercentage(double gradeRate)
 {
 	double result = 0;
+
+	/*
 	vector<double> percentages;
 
 	for(double percent = 100; percent >= 73; --percent) {
@@ -58,6 +60,7 @@ double toPercentage(double gradeRate)
 	}
 
 	displayTable(percentages);
+	*/
 
 	switch((int) (gradeRate * 10)) {
 
@@ -106,13 +109,16 @@ double toPercentage(double gradeRate)
 double to4Scale(double gradePrcnt)
 {
 	double result = 0;
+
+	/*
 	vector<double> rates;
 
 	for(double rate = 4.0; rate >= 0.99; rate -= 0.1) {
 		rates.push_back(rate);
 	}
-
+	
 	displayTable(rates);
+	*/
 
 	switch((int) gradePrcnt) {
 
@@ -171,7 +177,26 @@ int main()
 
 	// Perform input routines and error checking, and only exit when the user wants to
 	while(flag == true) {
+		// Prompt for the mode. Mode 1 converts to percentage while Mode 2 converts to 4-scale
+		cout << "Choose your mode." << endl
+			<< "1. 4-Scale to Percentage" << endl
+			<< "2. Percentage to 4-Scale" << endl
+			<< "Input the number of your choice and press enter. ";
+		cin >> mode;
 
+		// Mode 1 code block
+		if(mode == 1) {
+		}
+		// Mode 2 code block
+		else if(mode == 2) {
+		}
+
+		else {
+		}
+
+
+
+		
 
 		flag = false;
 	}
