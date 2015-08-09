@@ -1,0 +1,10 @@
+﻿Build started 8/8/2015 4:47:33 PM.
+     1>Project "c:\Users\Brei\documents\visual studio 2012\Projects\PEuler - Exercise 8\PEuler - Exercise 8\PEuler - Exercise 8.vcxproj" on node 2 (ClCompile target(s)).
+     1>ClCompile:
+         D:\Program Files\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Source1.cpp
+         Source1.cpp
+     1>Done Building Project "c:\Users\Brei\documents\visual studio 2012\Projects\PEuler - Exercise 8\PEuler - Exercise 8\PEuler - Exercise 8.vcxproj" (ClCompile target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.08
