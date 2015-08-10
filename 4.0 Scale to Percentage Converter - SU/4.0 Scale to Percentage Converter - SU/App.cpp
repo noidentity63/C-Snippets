@@ -20,13 +20,64 @@
 *
 */
 
+/*
+	The <windows.h> header has had the min() and max() macros since time immemorial, and they 
+	frequently cause problems with C++. Fortunately, you can disable them by adding 
+	#define NOMINMAX before including <windows.h>.
+*/
+#define NOMINMAX
+
 #include<iostream>
+#include<limits>
+#include<Windows.h>
 #include "School_data.h"
 using namespace std;
 
+// BONUS: Clear screen function (for Windows only)
+void clearScreen()
+{
+	HANDLE                     hStdOut;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	DWORD                      count;
+	DWORD                      cellCount;
+	COORD                      homeCoords = { 0, 0 };
+
+	hStdOut = GetStdHandle( STD_OUTPUT_HANDLE );
+	if (hStdOut == INVALID_HANDLE_VALUE) return;
+
+	/* Get the number of cells in the current buffer */
+	if (!GetConsoleScreenBufferInfo( hStdOut, &csbi )) return;
+	cellCount = csbi.dwSize.X *csbi.dwSize.Y;
+
+	/* Fill the entire buffer with spaces */
+	if (!FillConsoleOutputCharacter(
+		hStdOut,
+		(TCHAR) ' ',
+		cellCount,
+		homeCoords,
+		&count
+		)) return;
+
+	/* Fill the entire buffer with the current colors and attributes */
+	if (!FillConsoleOutputAttribute(
+		hStdOut,
+		csbi.wAttributes,
+		cellCount,
+		homeCoords,
+		&count
+		)) return;
+
+	/* Move the cursor home */
+	SetConsoleCursorPosition( hStdOut, homeCoords );
+ }
+
 void displayTable(vector<double> table)
 {
-	int cnt = 0;
+	decltype(table.size()) cnt = 0;			// decltype = declare type
+											// the type of cnt will be the same as the type
+											// of table.size()
+	
+	//auto cnt = 0;							// auto can also be the alternative for decltype
 
 	while(cnt < table.size()) {
 		cout << table[cnt] << "\t";
@@ -162,56 +213,122 @@ double to4Scale(double gradePrcnt)
 	return result;
 }
 
+bool mainMenuInvalid() 
+{
+	return false;
+}
+
+bool mode1Invalid() 
+{
+	return false;
+}
+
+bool mode2Invalid()
+{
+	return false;
+}
+
 int main()
 {
 	// Testing displayTable(vector<double>) in the following conversion functions
+	/*
 	toPercentage(0);
 	cout << endl;
 	to4Scale(0);
 	cout << endl;
+	*/
 
 	double input = 0;
-	int mode = 0;
+	unsigned int mode = 0;
 	
 	bool flag = true;
 
 	// Perform input routines and error checking, and only exit when the user wants to
 	while(flag == true) {
-		// Prompt for the mode. Mode 1 converts to percentage while Mode 2 converts to 4-scale
-		cout << "Choose your mode." << endl
-			<< "1. 4-Scale to Percentage" << endl
-			<< "2. Percentage to 4-Scale" << endl
-			<< "Input the number of your choice and press enter. ";
-		cin >> mode;
+		clearScreen();
 
+		// Prompt for the mode. Mode 1 converts to percentage while Mode 2 converts to 4-scale
+		// Mode 3 exits the program
+		cout << "Hello, Chii." << endl << endl
+			<< "Welcome to the Grade Converter. :)" << " This is a simple console application" 
+			<< " that converts your grades between their 4-scale and percentage forms." << endl
+			<< endl << "Menu" << endl << endl
+			<< "1. 4-Scale to Percentage"	<< endl
+			<< "2. Percentage to 4-Scale"	<< endl
+			<< "3. Exit"					<< endl << endl
+			<< "Input the number of your choice and press Enter. ";
+		cin >> mode;
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+		clearScreen();
 		// Mode 1 code block
-		if(mode == 1) {
+		while(mode == 1) {
+			// Clear screen first
+
+			cout << "Type in the grade to convert (1.0 - 4.0): ";
+			cin >> input;
+			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+			// Error checker
+			if(input >= 1.0 && input <= 4.0) {
+				cout << input << " => " << toPercentage(input) << "%" << endl
+				<< "Press Enter to go back to the Main menu. ";
+
+				cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+				mode = 0;
+			}
+			else {
+				cout << "Input is not within range." << endl << endl;
+			}
 		}
 		// Mode 2 code block
-		else if(mode == 2) {
+		while(mode == 2) {
+			// Clear screen first
+
+			cout << "Type in the grade to convert (73 - 100): ";
+			cin >> input;
+			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+			// Error checker
+			if(input >= 73 && input <= 100) {
+				cout << input << " => " << to4Scale(input) << endl
+				<< "Press Enter to go back to the Main menu. ";
+
+				cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+				mode = 0;
+			}
+			else {
+				cout << "Input is not within range." << endl << endl;
+			}
+		}
+		// Mode 3 code block
+		while(mode == 3) {
+			flag = false;
+
+			// Clear the screen and show a final message
+			cout << "Thank you for using this program! Now, press ENTER to really exit." << endl;
+
+			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+			mode = 0;
+			//system("pause");
+		}
+		// Invalid Input
+		if(!cin >> mode) {
+			cerr << "Sorry, I can't process that. No such mode exists. Press Enter to go back." 
+				<< endl;
+
+			//cin.clear();
+			//cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+			getchar();
+
+			mode = 0;
 		}
 
-		else {
-		}
-
-
-
-		
-
-		flag = false;
 	}
-
-	/*
-	cout << "Type in the grade to convert (4.0 - 1.0): ";
-	cin >> input;
-
-	cout << input << " => " << toPercentage(input) << "%" << endl;
-	*/
-
-	cout << "Type in the grade to convert (100 - 73): ";
-	cin >> input;
-
-	cout << input << " => " << to4Scale(input) << endl;
 
 	return 0;			// Program performed successfully
 }
