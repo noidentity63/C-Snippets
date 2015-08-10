@@ -228,6 +228,39 @@ bool mode2Invalid()
 	return false;
 }
 
+void displayTimer(int cnt) {
+	// Create a 5-second timer
+	// Iterate a Sleep(1000 function) five times.
+	for(auto i = cnt; i > 0; --i) {
+		cout << " Resuming operation in " << i;
+
+		if (i == 1) {
+			cout << " second.";
+		}
+		else {
+			cout << " seconds.";
+		}
+
+		auto length = 34;
+
+		while(length > 0) {
+			cout << "\b";
+			--length;
+		}
+
+		Sleep(1000);
+	}
+}
+
+void pause(bool showOutput)
+{
+	if (showOutput) {
+		cout << "Press ENTER to continue...";
+	}
+	cin.sync();
+	cin.ignore( numeric_limits <streamsize> ::max(), '\n' );
+}
+
 int main()
 {
 	// Testing displayTable(vector<double>) in the following conversion functions
@@ -238,53 +271,67 @@ int main()
 	cout << endl;
 	*/
 
-	double input = 0;
-	unsigned int mode = 0;
-	
 	bool flag = true;
 
 	// Perform input routines and error checking, and only exit when the user wants to
 	while(flag == true) {
 		clearScreen();
 
+		double input = 0;
+		unsigned int mode = 0;
+
 		// Prompt for the mode. Mode 1 converts to percentage while Mode 2 converts to 4-scale
 		// Mode 3 exits the program
-		cout << "Hello, Chii." << endl << endl
-			<< "Welcome to the Grade Converter. :)" << " This is a simple console application" 
-			<< " that converts your grades between their 4-scale and percentage forms." << endl
+		cout << "Hello, Chii." << endl << endl;
+
+		cout << "Welcome to the Grade Converter. :)" << " This is a simple console application" 
+			<< " that converts Your grades between their 4-scale and percentage forms." << endl
 			<< endl << "Menu" << endl << endl
 			<< "1. 4-Scale to Percentage"	<< endl
 			<< "2. Percentage to 4-Scale"	<< endl
 			<< "3. Exit"					<< endl << endl
-			<< "Input the number of your choice and press Enter. ";
-		cin >> mode;
-		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			<< "Input the number of Your choice and press ENTER. ";
+		cin >> mode;									// 1\n
+		//cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-		clearScreen();
+		//clearScreen();
+
 		// Mode 1 code block
 		while(mode == 1) {
 			// Clear screen first
+			clearScreen();
 
 			cout << "Type in the grade to convert (1.0 - 4.0): ";
 			cin >> input;
-			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			//cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 			// Error checker
 			if(input >= 1.0 && input <= 4.0) {
-				cout << input << " => " << toPercentage(input) << "%" << endl
-				<< "Press Enter to go back to the Main menu. ";
+				cout << endl << "\t\t"
+					<< input << " => " << toPercentage(input) << "%" << endl
+					<< endl << "Press ENTER to go back to the Main menu. ";
 
-				cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				pause(false);
 
 				mode = 0;
 			}
+			// Check if input is not an int
+			else if(!cin >> (int) input) {
+				cout << "Input is not a number." << endl << endl;
+
+				cin.clear();
+				pause(true);
+			}
 			else {
 				cout << "Input is not within range." << endl << endl;
+
+				pause(true);
 			}
 		}
 		// Mode 2 code block
 		while(mode == 2) {
 			// Clear screen first
+			clearScreen();
 
 			cout << "Type in the grade to convert (73 - 100): ";
 			cin >> input;
@@ -292,15 +339,25 @@ int main()
 
 			// Error checker
 			if(input >= 73 && input <= 100) {
-				cout << input << " => " << to4Scale(input) << endl
-				<< "Press Enter to go back to the Main menu. ";
+				cout << endl << "\t\t"
+					<< input << "% => " << to4Scale(input) << endl
+					<< endl << "Press ENTER to go back to the Main menu. ";
 
-				cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				pause(false);
 
 				mode = 0;
 			}
+			// Check if input is not an int
+			else if(!cin >> (int) input) {
+				cout << "Input is not a number." << endl << endl;
+
+				cin.clear();
+				pause(true);
+			}
 			else {
 				cout << "Input is not within range." << endl << endl;
+
+				pause(true);
 			}
 		}
 		// Mode 3 code block
@@ -308,26 +365,26 @@ int main()
 			flag = false;
 
 			// Clear the screen and show a final message
+			clearScreen();
+
 			cout << "Thank you for using this program! Now, press ENTER to really exit." << endl;
 
-			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			pause(false);
 
 			mode = 0;
 			//system("pause");
 		}
 		// Invalid Input
 		if(!cin >> mode) {
-			cerr << "Sorry, I can't process that. No such mode exists. Press Enter to go back." 
+			cerr << endl << "Sorry, I can't process that. No such mode exists." 
 				<< endl;
 
-			//cin.clear();
-			//cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			cin.clear();
+			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-			getchar();
-
-			mode = 0;
+			displayTimer(5);
 		}
-
+		
 	}
 
 	return 0;			// Program performed successfully
