@@ -27,14 +27,18 @@
 */
 #define NOMINMAX
 
+#include<conio.h>
+#include<chrono>
+#include<future>
 #include<iostream>
 #include<limits>
+#include<thread>
 #include<Windows.h>
 #include "School_data.h"
 using namespace std;
 
 // BONUS: Clear screen function (for Windows only)
-void clearScreen()
+void clearScreen(bool moveToHomeOnly)
 {
 	HANDLE                     hStdOut;
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -43,29 +47,34 @@ void clearScreen()
 	COORD                      homeCoords = { 0, 0 };
 
 	hStdOut = GetStdHandle( STD_OUTPUT_HANDLE );
-	if (hStdOut == INVALID_HANDLE_VALUE) return;
 
-	/* Get the number of cells in the current buffer */
-	if (!GetConsoleScreenBufferInfo( hStdOut, &csbi )) return;
-	cellCount = csbi.dwSize.X *csbi.dwSize.Y;
+	if(!moveToHomeOnly) {
+		
+		if (hStdOut == INVALID_HANDLE_VALUE) return;
 
-	/* Fill the entire buffer with spaces */
-	if (!FillConsoleOutputCharacter(
-		hStdOut,
-		(TCHAR) ' ',
-		cellCount,
-		homeCoords,
-		&count
-		)) return;
+		/* Get the number of cells in the current buffer */
+		if (!GetConsoleScreenBufferInfo( hStdOut, &csbi )) return;
+		cellCount = csbi.dwSize.X *csbi.dwSize.Y;
 
-	/* Fill the entire buffer with the current colors and attributes */
-	if (!FillConsoleOutputAttribute(
-		hStdOut,
-		csbi.wAttributes,
-		cellCount,
-		homeCoords,
-		&count
-		)) return;
+		/* Fill the entire buffer with spaces */
+		if (!FillConsoleOutputCharacter(
+			hStdOut,
+			(TCHAR) ' ',
+			cellCount,
+			homeCoords,
+			&count
+			)) return;
+
+		/* Fill the entire buffer with the current colors and attributes */
+		if (!FillConsoleOutputAttribute(
+			hStdOut,
+			csbi.wAttributes,
+			cellCount,
+			homeCoords,
+			&count
+			)) return;
+
+	}
 
 	/* Move the cursor home */
 	SetConsoleCursorPosition( hStdOut, homeCoords );
@@ -228,7 +237,8 @@ bool mode2Invalid()
 	return false;
 }
 
-void displayTimer(int cnt) {
+void displayTimer(int cnt) 
+{
 	// Create a 5-second timer
 	// Iterate a Sleep(1000 function) five times.
 	for(auto i = cnt; i > 0; --i) {
@@ -252,6 +262,28 @@ void displayTimer(int cnt) {
 	}
 }
 
+void marquee(string phrase)
+{
+	decltype(phrase.size()) length = phrase.size();
+
+	cout << phrase;
+
+	while(true) {
+		unsigned int cnt = 0;
+
+		Sleep(100);
+		// Scroll to the right
+		while(cnt < length) {
+			cout << "\b";
+			++cnt;
+		}
+		cout << " " << phrase;
+
+		// If the last character of the string reached the end of the cmd window
+		// Scroll to the left
+	}
+}
+
 void pause(bool showOutput)
 {
 	if (showOutput) {
@@ -259,6 +291,95 @@ void pause(bool showOutput)
 	}
 	cin.sync();
 	cin.ignore( numeric_limits <streamsize> ::max(), '\n' );
+}
+
+void displayConsoleWidth()
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	auto width = 0;
+	// Check if there is are readable console values
+	if(!GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+		cerr << "Cannot determine console size." << endl;
+	}
+	else {
+		width = csbi.dwSize.X;
+
+		cout << "The console is " << csbi.srWindow.Right - csbi.srWindow.Left << " wide" << endl;
+	}
+
+	cout << endl;
+}
+
+int getConsoleWidth()
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	auto width = 0;
+	// Check if there is are readable console values
+	if(!GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+		//cerr << "Cannot determine console size." << endl;
+		return -1;
+	}
+	else {
+		width = csbi.dwSize.X;
+
+		//width = csbi.srWindow.Right - csbi.srWindow.Left;
+
+		//cout << "The console is " << csbi.srWindow.Right - csbi.srWindow.Left << " wide" << endl;
+	}
+
+	return width;
+}
+
+void displayIntro()
+{
+	vector<const string> message;
+
+	message.push_back("Hello, Chii.");
+	message.push_back("This is my little present for You. :)");
+	message.push_back("I hope it'll serve useful to You at some point.");
+
+	// Show letters one by one with a for-loop
+	for(auto i = 0; i < message.size(); ++i) {
+
+		// for (0, 79), the midpoints are (39, 40)
+		// Method for placing text to the middle of console.
+		for(auto a = 0; a < getConsoleWidth() / 2; ++a) {
+			cout << " ";
+		}
+
+		for(auto b = message[i].size() / 2; b > 0; --b) {
+			cout << "\b";
+		}
+
+		for(auto j = 0; j < message[i].size(); ++j) {
+			// Store string to a temp output buffer
+			auto output = message[i];
+
+			cout << output[j];
+			Sleep(60);
+
+			// If a key is pressed in the middle of the intro sequence,
+			// break the operation and proceed to the main menu.
+			if(_kbhit() != 0) {
+				return;
+			}
+		}
+
+		cout << endl << endl;
+		Sleep(1250);
+
+	}
+
+	Sleep(2250);
+	/*
+	cout << message[0] << endl << endl;
+	Sleep(1500);
+	cout << message[1] << endl << endl;
+	Sleep(1500);
+	cout << message[2] << endl << endl;
+	*/
 }
 
 int main()
@@ -270,36 +391,52 @@ int main()
 	to4Scale(0);
 	cout << endl;
 	*/
+	cout << endl << endl << endl << endl;
+	displayIntro();
 
 	bool flag = true;
 
 	// Perform input routines and error checking, and only exit when the user wants to
 	while(flag == true) {
-		clearScreen();
+		clearScreen(false);
+
+		// Testing getConsoleWidth()
+		// cout << getConsoleWidth();
 
 		double input = 0;
 		unsigned int mode = 0;
 
+		/*
+		// Marquee text
+		thread t1Marquee(marquee, "Hello, Chii.");
+		Sleep(5000);
+		*/
+
+		// cout << "Hello, Chii." << endl << endl;
+
 		// Prompt for the mode. Mode 1 converts to percentage while Mode 2 converts to 4-scale
 		// Mode 3 exits the program
-		cout << "Hello, Chii." << endl << endl;
-
-		cout << "Welcome to the Grade Converter. :)" << " This is a simple console application" 
-			<< " that converts Your grades between their 4-scale and percentage forms." << endl
-			<< endl << "Menu" << endl << endl
+		cout << endl << endl
+			<< "Welcome to the Grade Converter. :)" << " This is a simple console application" 
+			<< " that " << endl << "converts Your grades between their 4-scale and percentage forms." 
+			<< endl << endl << endl << "Menu" << endl << endl
 			<< "1. 4-Scale to Percentage"	<< endl
 			<< "2. Percentage to 4-Scale"	<< endl
-			<< "3. Exit"					<< endl << endl
+			<< "3. Exit (or You can just click the 'x' button at the top right of this window)"	
+			<< endl << endl
 			<< "Input the number of Your choice and press ENTER. ";
 		cin >> mode;									// 1\n
 		//cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+		/* Move the cursor home */
+		//clearScreen(true);
 
 		//clearScreen();
 
 		// Mode 1 code block
 		while(mode == 1) {
 			// Clear screen first
-			clearScreen();
+			clearScreen(false);
 
 			cout << "Type in the grade to convert (1.0 - 4.0): ";
 			cin >> input;
@@ -309,7 +446,7 @@ int main()
 			if(input >= 1.0 && input <= 4.0) {
 				cout << endl << "\t\t"
 					<< input << " => " << toPercentage(input) << "%" << endl
-					<< endl << "Press ENTER to go back to the Main menu. ";
+					<< endl << "Press ENTER to go back to the Menu. ";
 
 				pause(false);
 
@@ -317,13 +454,13 @@ int main()
 			}
 			// Check if input is not an int
 			else if(!cin >> (int) input) {
-				cout << "Input is not a number." << endl << endl;
+				cerr << "Your input isn't a number." << endl << endl;
 
 				cin.clear();
 				pause(true);
 			}
 			else {
-				cout << "Input is not within range." << endl << endl;
+				cerr << "Your input is not within range." << endl << endl;
 
 				pause(true);
 			}
@@ -331,7 +468,7 @@ int main()
 		// Mode 2 code block
 		while(mode == 2) {
 			// Clear screen first
-			clearScreen();
+			clearScreen(false);
 
 			cout << "Type in the grade to convert (73 - 100): ";
 			cin >> input;
@@ -339,7 +476,7 @@ int main()
 
 			// Error checker
 			if(input >= 73 && input <= 100) {
-				cout << endl << "\t\t"
+				cerr << endl << "\t\t"
 					<< input << "% => " << to4Scale(input) << endl
 					<< endl << "Press ENTER to go back to the Main menu. ";
 
@@ -349,13 +486,13 @@ int main()
 			}
 			// Check if input is not an int
 			else if(!cin >> (int) input) {
-				cout << "Input is not a number." << endl << endl;
+				cerr << "Your input isn't a number." << endl << endl;
 
 				cin.clear();
 				pause(true);
 			}
 			else {
-				cout << "Input is not within range." << endl << endl;
+				cout << "Your input is not within range." << endl << endl;
 
 				pause(true);
 			}
@@ -365,9 +502,9 @@ int main()
 			flag = false;
 
 			// Clear the screen and show a final message
-			clearScreen();
+			clearScreen(false);
 
-			cout << "Thank you for using this program! Now, press ENTER to really exit." << endl;
+			cout << "Thank you for using this program! Now, press ENTER again to exit." << endl;
 
 			pause(false);
 
@@ -375,16 +512,26 @@ int main()
 			//system("pause");
 		}
 		// Invalid Input
+		if(mode > 3) {
+			cerr << endl << "No such mode exists." 
+				<< endl;
+
+			displayTimer(4);
+		}
+		// Invalid Input
 		if(!cin >> mode) {
-			cerr << endl << "Sorry, I can't process that. No such mode exists." 
+			cerr << endl << "Sorry, I can't process letters. No such mode exists." 
 				<< endl;
 
 			cin.clear();
 			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-			displayTimer(5);
+			displayTimer(4);
 		}
-		
+
+	// finish_p.set_value();
+	// t1Marquee.join();
+
 	}
 
 	return 0;			// Program performed successfully
