@@ -14,7 +14,7 @@ private:
 	bool isAdjacent(int num1, int num2) {
 		// If the two numbers are next to each other, return true
 		if((num1 == (num2 - 1)) || (num1 == (num2 + 1)) || (num2 == (num1 - 1))
-			|| (num2 == (num1 + 1))) {
+			|| (num2 == (num1 + 1)) || (num1 == num2)) {
 				return true;
 		}
 
@@ -35,8 +35,11 @@ private:
 		return digits;
 	}
 
+	// Stores the adjacent numbers of numString
 	std::vector<int> storeAdjacentFactors(std::string numString)
 	{
+		int refDigit = 0;
+		unsigned int factorCnt = 0;
 		std::vector<int> factors;
 		
 		// Iterate through the string with a ranged-for statement
@@ -45,39 +48,51 @@ private:
 			// Check if each string character is a digit
 			if(isdigit(numString[c])) {
 				// numString[c] - 48
-				int digit1 = numString[c] - '0', digit2 = 0;
+				int currDigit = numString[c] - '0', digit2 = numString[c + 1] - '0';
+			
+				if(factorCnt == 0 && isAdjacent(currDigit, digit2)) {
+						factors.push_back(currDigit);
+						++factorCnt;
 
-				if(c != numString.size()) {
-					digit2 = numString[c + 1] - '0';
-
-					// If isDigit is at the end of string, digit2 will be the previous number
-					if(c == numString.size() - 1) {
-					digit2 = numString[c - 1] - '0';
-
-					}
-				}
-
-				// If a digit, compare the current digit with the next digit and check if they're
-				// adjacent
-				if(isAdjacent(digit1, digit2)) {
-					factors.push_back(digit1);
+						refDigit = currDigit;	
 				}
 				else {
-					if (c > 0) {
-						digit2 = numString[c - 1] - '0';
+					// Compare the current digit with the next digit and check if they're
+					// adjacent
+					if(isAdjacent(refDigit, currDigit)) {
+						factors.push_back(currDigit);
+						++factorCnt;
 					}
+					else {
+						if(c == numString.size() - 1) {
+							digit2 = refDigit;
+						}
+					
+						// 6911566500899898998471567			15			0 
+						factors.push_back(0);
+						factorCnt = 0;	
 
-					// 1156008				5
+						if(isAdjacent(currDigit, digit2)) {
+							factors.push_back(currDigit);
+							++factorCnt;
 
-					if(isAdjacent(digit1, digit2)) {
-						factors.push_back(digit1);
+							refDigit = currDigit;
+						}
+						else {
+							refDigit = 0;
+						}
 					}
+					/*
 					else {
 						factors.push_back(0);
 					}
+					*/
 				}
 			}
-		}	
+
+			//std::cout << factors[c] << " ";
+		}
+		
 
 		return factors;
 	}
@@ -91,9 +106,10 @@ public:
 		return this -> numString;
 	}
 
-	int largestProduct(unsigned int cnt)
+	long long int largestProduct(unsigned int cnt)
 	{
-		int factorCnt = 0, largestProduct = 0, currentProduct = 1;
+		long long int largestProduct = 0, currentProduct = 1;
+		unsigned int factorCnt = 0;
 		std::vector<int> factors = storeAdjacentFactors(numString);
 
 		for(auto factor : factors) {
@@ -111,12 +127,74 @@ public:
 				}
 
 				// Reset factorCnt
+				currentProduct = 1;
 				factorCnt = 0;
 			}
 		}
 
 		return largestProduct;
 	}
+
+	long long int getLargestProduct(unsigned int cnt)
+	{
+		long long int largestProduct = 0, currentProduct = 1;
+		unsigned int factorCnt = 0;
+		
+		int refDigit = 0;
+		std::vector<int> factors;
+		
+		// Iterate through the string with a ranged-for statement
+		for(decltype(numString.size()) c = 0; c < numString.size(); ++c) {
+
+			// Check if each string character is a digit
+			if(isdigit(numString[c])) {
+				// numString[c] - 48
+				int currDigit = numString[c] - '0', digit2 = numString[c + 1] - '0';
+			
+				if(factorCnt == 0 && isAdjacent(currDigit, digit2)) {
+						currentProduct *= numString[c] - '0';
+						++factorCnt;
+
+						refDigit = currDigit;	
+				}
+				else {
+					// Compare the current digit with the next digit and check if they're
+					// adjacent
+					if(isAdjacent(refDigit, currDigit) && factorCnt < cnt) {
+						currentProduct *= numString[c] - '0';;
+						++factorCnt;
+					}
+					else {
+						if(c == numString.size() - 1) {
+							digit2 = refDigit;
+						}
+					
+						factorCnt = 0;
+						currentProduct = 1;
+						/*
+						if(isAdjacent(currDigit, digit2)) {
+							factors.push_back(currDigit);
+							++factorCnt;
+
+							refDigit = currDigit;
+						}
+						else {
+							refDigit = 0;
+						}
+						*/
+					}
+				}
+
+				if(currentProduct > largestProduct) {
+					largestProduct = currentProduct;
+				}
+			}
+			//std::cout << factors[c] << " ";
+		}
+
+		return largestProduct;
+	}
+
 
 	void displayAdjFactors()
 	{

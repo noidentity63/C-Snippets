@@ -36,13 +36,6 @@
 using namespace std;
 
 
-vector<int> findAdjFactors(vector<int> num)
-{
-
-
-	return num;
-}
-
 int main()
 {
 	/* Test if the 1000-digit number fits in an int
@@ -84,6 +77,10 @@ int main()
 						"05886116467109405077541002256983155200055935729725"
 						"71636269561882670428252483600823257530420752963450";
 
+	//testNum.numString = "3280069989280943423334334343349768";	// 8 9 8 0 4 5 4 0 0 0 0 0 0 0 4 5 
+
+	testNum.numString = "77777788";				// 16807 21952
+	//testNum.numString.append(1000, '9');
 	//cout << testNum.getNumString() << endl;
 
 	testNum.displayNum();
@@ -100,12 +97,20 @@ int main()
 	else {
 		cout << "False";
 	}
-	*/
 	
-	unsigned int cnt = 4;
+	vector<int> arr;
+
+	arr.push_back(5);
+	arr.push_back(6);
+	arr.push_back(7);
+
+	cout << arr[arr.size() - 1] << endl;
+	*/
+
+	unsigned int cnt = 5;
 
 	cout << "The largest product of " << cnt << " adjacent products is " 
-		<< testNum.largestProduct(cnt) << "." << endl;
+		<< testNum.getLargestProduct(cnt) << "." << endl;
 
 	return 0;
 }
