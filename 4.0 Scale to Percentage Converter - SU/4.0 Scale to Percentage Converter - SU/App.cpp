@@ -1,6 +1,6 @@
 /*
 *
-*	Silliman University 4.0 Scale to Percentage Converter
+*	Silliman University Grade Converter
 *	Author: Brei
 *
 *	Desc: A simple program that receives user input whose value is a grade in either the
@@ -38,7 +38,8 @@
 using namespace std;
 
 // BONUS: Clear screen function (for Windows only)
-void clearScreen(bool moveToHomeOnly)
+void clearScreen(bool moveToHomeOnly)			// moveToHomeOnly is true if you only need to move
+												// the cursor to home
 {
 	HANDLE                     hStdOut;
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -318,7 +319,7 @@ int getConsoleWidth()
 	auto width = 0;
 	// Check if there is are readable console values
 	if(!GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
-		//cerr << "Cannot determine console size." << endl;
+		cerr << "Cannot determine console size." << endl;
 		return -1;
 	}
 	else {
@@ -336,9 +337,9 @@ void displayIntro()
 {
 	vector<const string> message;
 
-	message.push_back("Hello, Chii.");
-	message.push_back("This is my little present for You. :)");
-	message.push_back("I hope it'll serve useful to You at some point.");
+	message.push_back("Hello, User.");
+	message.push_back("I will be your guide throughout this program session. :)");
+	message.push_back("I hope this application will serve its purpose.");
 
 	// Show letters one by one with a for-loop
 	for(auto i = 0; i < message.size(); ++i) {
@@ -408,17 +409,16 @@ int main()
 
 		/*
 		// Marquee text
-		thread t1Marquee(marquee, "Hello, Chii.");
+		thread t1Marquee(marquee, "Hello, User.");
 		Sleep(5000);
 		*/
-
-		// cout << "Hello, Chii." << endl << endl;
 
 		// Prompt for the mode. Mode 1 converts to percentage while Mode 2 converts to 4-scale
 		// Mode 3 exits the program
 		cout << endl << endl
-			<< "Welcome to the Grade Converter. :)" << " This is a simple console application" 
-			<< " that " << endl << "converts Your grades between their 4-scale and percentage forms." 
+			<< "Welcome to the Grade Converter - Silliman University edition. :)" << endl 
+			<< "This is a simple console application that converts Your grades"
+			<< endl << "between their 4-scale and percentage forms." 
 			<< endl << endl << endl << "Menu" << endl << endl
 			<< "1. 4-Scale to Percentage"	<< endl
 			<< "2. Percentage to 4-Scale"	<< endl
@@ -431,14 +431,12 @@ int main()
 		/* Move the cursor home */
 		//clearScreen(true);
 
-		//clearScreen();
-
 		// Mode 1 code block
 		while(mode == 1) {
 			// Clear screen first
 			clearScreen(false);
 
-			cout << "Type in the grade to convert (1.0 - 4.0): ";
+			cout << endl << endl << "Type in the grade to convert (1.0 - 4.0): ";
 			cin >> input;
 			//cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
@@ -470,7 +468,7 @@ int main()
 			// Clear screen first
 			clearScreen(false);
 
-			cout << "Type in the grade to convert (73 - 100): ";
+			cout << endl << endl << "Type in the grade to convert (73 - 100): ";
 			cin >> input;
 			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
