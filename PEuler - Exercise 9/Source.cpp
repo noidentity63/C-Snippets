@@ -10,6 +10,8 @@
 
 *	There exists exactly one Pythagorean triplet for which a + b + c = 1000.
 	Find the product abc.
+
+	NOTE: Very Slow. Needs a better algorithm.
 */
 
 #include<iostream>
@@ -37,45 +39,22 @@ int abc()
 		// Scale up through the Pythagorean triples (x2 scale) until a + b + c = 1000
 		while((a + b + c) != 1000) {
 			a = (n * n) - (m * m), b = 2 * (n * m), c = (n * n) + (m * m);
-			int a1 = a, b1 = b, c1 = c;
+			int a1 = a, b1 = b, c1 = c;				// a + b + c = 1000 ->	a = 1000 - b - c
+													//						b = 1000 - a - c
+													//						c = 1000 - b - a
+			a1 = 1000 - b - c;
+			b1 = 1000 - a - c;
+			c1 = 1000 - b - a;
+									
+			cout << a1 << " " << b1 << " " << c1 << " \t\t" << a1 + b1 + c1 << endl;
 
-			for(int addToScale = 0; addToScale < 6; ++addToScale) {
+			++m, ++n;
 
-				for(;;) {
-					cout << a1 << " ";
-					cout << b1 << " ";
-					cout << c1 << " \t\t";
-					cout << a1 + b1 + c1;
-					cout << endl;
-
-					a1 *= scale + addToScale, b1 *= scale + addToScale, c1 *= scale + addToScale;
-					
-					if((a1 + b1 + c1) >= 1000) {
-						a1 = a, b1 = b, c1 = c;
-						break;
-					}
-
-					Sleep(500);
-				}
-				
-				if((a + b + c) >= 1000) {
-					break;
-				}
-
-				Sleep(1000);
+			if((a + b + c) == 1000) {
+				product = a1 * b1 * c1;
 			}
 
-			cout << a1 << " ";
-			cout << b1 << " ";
-			cout << c1 << " \t";
-			cout << a1 + b1 + c1;
-			cout << endl;
-
-			++n, ++m;
-		}
-
-		if((a + b + c) == 1000) {
-			product = a * b * c;
+			Sleep(150);
 		}
 
 	}
@@ -83,6 +62,8 @@ int abc()
 		return -1;
 	}
 	
+	
+
 	return product;
 }
 
@@ -135,7 +116,7 @@ int abcMethod2(int a, int b, int c)
 
 int main()
 {
-	cout << "a x b x c = " << abcMethod2(3, 4, 5) << endl;		// Answer: 31875000 (200, 375, 425)
+	cout << "a x b x c = " << abc() << endl;		// Answer: 31875000 (200, 375, 425)
 
 	//abcMethod2(3, 4, 5);
 
