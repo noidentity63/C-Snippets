@@ -57,6 +57,7 @@ int largestProduct(const int arr[20][20])
 	// Divide the search into subroutines (adjacent up/down, left/right, or diagonal)
 
 	// Up/Down
+	bool atStart = true;
 	int rowIdx = 0, colIdx = 0;
 
 	while(true) {
@@ -73,52 +74,132 @@ int largestProduct(const int arr[20][20])
 			largest = current;
 		}
 
-		/*
-		if((colIdx + 1) % 20 == 0) {
-			++rowIdx;
-		}
-		*/
+		atStart = false;
 
 		if(colIdx == 19) {
 			++rowIdx;
 			colIdx = 0;
+			atStart = true;
 
 			if(rowIdx == 17) {
 				break;
 			}
 		}
-	}
-	/*
-	// Left/Right
-	colIdx = 0;
 
-	for(auto rowIdx = 0; ; ++rowIdx) {
+		if(!atStart) {
+			++colIdx;
+		}
+		
+	}
+
+	// Left/Right
+	rowIdx = 0, colIdx = 0, atStart = true;
+
+	while(true) {
 		current = arr[rowIdx][colIdx] * arr[rowIdx][colIdx + 1] * arr[rowIdx][colIdx + 2]
 			* arr[rowIdx][colIdx + 3];
 
+		
 		cout << arr[rowIdx][colIdx] << " * " << arr[rowIdx][colIdx + 1] << " * " 
 			<< arr[rowIdx][colIdx + 2] << " * " << arr[rowIdx][colIdx + 3] << " = " << current
 			<< endl;
+		
+		
+		if(current > largest) {
+			largest = current;
+		}
+
+		atStart = false;
+
+		if(rowIdx == 19) {
+			++colIdx;
+			rowIdx = 0;
+			atStart = true;
+
+			if(colIdx == 17) {
+				break;
+			}
+		}
+
+		if(!atStart) {
+			++rowIdx;
+		}
+		
+	}
+
+	// Diagonal (Top-Left to Bottom-Right)
+	rowIdx = 0, colIdx = 0, atStart = true;
+
+	while(true) {
+		current = arr[rowIdx][colIdx] * arr[rowIdx + 1][colIdx + 1] * arr[rowIdx + 2][colIdx + 2]
+			* arr[rowIdx + 3][colIdx + 3];
+
+		
+		cout << arr[rowIdx][colIdx] << " * " << arr[rowIdx + 1][colIdx + 1] << " * " 
+			<< arr[rowIdx + 2][colIdx + 2] << " * " << arr[rowIdx + 3][colIdx + 3] << " = " << current
+			<< endl;
+		
+		
+		if(current > largest) {
+			largest = current;
+		}
+
+		atStart = false;
+
+		// Traverse through the array horizontally, thus if col = 16, reset column and inc row
+		if(colIdx == 16) {
+			++rowIdx;
+			colIdx = 0;
+			atStart = true;
+
+			if(rowIdx == 17) {
+				break;
+			}
+		}
+
+		if(!atStart) {
+			++colIdx;
+		}
+		
+	}
+
+	// Diagonal (Bottom-Left to Top-Right)
+	rowIdx = 0, colIdx = 0, atStart = true;
+
+	while(true) {
+		current = arr[rowIdx + 3][colIdx] * arr[rowIdx + 2][colIdx + 1] * arr[rowIdx + 1][colIdx + 2]
+			* arr[rowIdx][colIdx + 3];
+
+		
+		cout << arr[rowIdx + 3][colIdx] << " * " << arr[rowIdx + 2][colIdx + 1] << " * " 
+			<< arr[rowIdx + 1][colIdx + 2] << " * " << arr[rowIdx][colIdx + 3] << " = " << current
+			<< endl;
+
 
 		if(current > largest) {
 			largest = current;
 		}
 
-		if((colIdx + 1) % 20 == 0) {
-			++rowIdx;
-		}
+		atStart = false;
 
-		if(colIdx == 19) {
+		// Traverse through the array horizontally, thus if col = 16, reset column and inc row
+		if(colIdx == 16) {
+			++rowIdx;
 			colIdx = 0;
+			atStart = true;
 
 			if(rowIdx == 17) {
 				break;
 			}
 		}
-	}
-	*/
 
-	// Diagonal
+		if(!atStart) {
+			++colIdx;
+		}
+		
+	}
+
+	cout << endl << endl;
 
 	return largest;
 }
@@ -155,9 +236,7 @@ int main()
 	cout << endl << endl;
 
 	// Testing the example given
-	cout << arrayNum[6][8] * arrayNum[7][9] * arrayNum[8][10] * arrayNum[9][11] << endl << endl;
-
-	largestProduct(arrayNum);
+	cout << "The largest product in the grid is " << largestProduct(arrayNum) << "." << endl;
 
 	return 0;
 }
