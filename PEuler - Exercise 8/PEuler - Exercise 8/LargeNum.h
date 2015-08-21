@@ -139,49 +139,20 @@ public:
 	{
 		long long int largestProduct = 0, currentProduct = 1;
 		unsigned int factorCnt = 0;
-		
-		int refDigit = 0;
-		std::vector<int> factors;
-		
+			
 		// Iterate through the string with a ranged-for statement
-		for(decltype(numString.size()) c = 0; c < numString.size(); ++c) {
+		for(decltype(numString.size()) c = 0; c < numString.size() - (cnt - 2); ++c) {
 
 			// Check if each string character is a digit
 			if(isdigit(numString[c])) {
 				// numString[c] - 48
-				int currDigit = numString[c] - '0', digit2 = numString[c + 1] - '0';
+				currentProduct = 1;
 			
-				if(factorCnt == 0 && isAdjacent(currDigit, digit2)) {
-						currentProduct *= numString[c] - '0';
-						++factorCnt;
-
-						refDigit = currDigit;	
-				}
-				else {
-					// Compare the current digit with the next digit and check if they're
-					// adjacent
-					if(isAdjacent(refDigit, currDigit) && factorCnt < cnt) {
-						currentProduct *= numString[c] - '0';;
-						++factorCnt;
-					}
-					else {
-						if(c == numString.size() - 1) {
-							digit2 = refDigit;
-						}
-					
-						factorCnt = 0;
-						currentProduct = 1;
-						/*
-						if(isAdjacent(currDigit, digit2)) {
-							factors.push_back(currDigit);
-							++factorCnt;
-
-							refDigit = currDigit;
-						}
-						else {
-							refDigit = 0;
-						}
-						*/
+				for(unsigned int d = 0; d < cnt; ++d) {
+					// Check each iteration if adjacent
+					// If adjacent, keep on multiplying
+					if(isAdjacent(numString[c] - '0', numString[c + d] - '0')) {
+						currentProduct *= numString[c + d] - '0';
 					}
 				}
 

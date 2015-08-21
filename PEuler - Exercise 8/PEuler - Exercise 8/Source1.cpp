@@ -79,7 +79,7 @@ int main()
 
 	//testNum.numString = "3280069989280943423334334343349768";	// 8 9 8 0 4 5 4 0 0 0 0 0 0 0 4 5 
 
-	testNum.numString = "77777788";				// 16807 21952
+	//testNum.numString = "";				// 16807 21952
 	//testNum.numString.append(1000, '9');
 	//cout << testNum.getNumString() << endl;
 
@@ -107,7 +107,7 @@ int main()
 	cout << arr[arr.size() - 1] << endl;
 	*/
 
-	unsigned int cnt = 5;
+	unsigned int cnt = 4;
 
 	cout << "The largest product of " << cnt << " adjacent products is " 
 		<< testNum.getLargestProduct(cnt) << "." << endl;
